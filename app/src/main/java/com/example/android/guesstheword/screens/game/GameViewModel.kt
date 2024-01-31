@@ -11,15 +11,21 @@ import androidx.lifecycle.ViewModel
  * ViewModel containing all the logic needed to run the game
  */
 class GameViewModel : ViewModel() {
+
     companion object {
-        // These represent different important times
+        // These represent different important times in the game, such as game length.
+
         // This is when the game is over
-        const val DONE = 0L
+        private const val DONE = 0L
+
         // This is the number of milliseconds in a second
-        const val ONE_SECOND = 1000L
+        private const val ONE_SECOND = 1000L
+
         // This is the total time of the game
-        const val COUNTDOWN_TIME = 10000L
+        private const val COUNTDOWN_TIME = 60000L
+
     }
+
     private val timer: CountDownTimer
 
     private val _currentTime = MutableLiveData<Long>()
@@ -50,14 +56,17 @@ class GameViewModel : ViewModel() {
         resetList()
         nextWord()
         _score.value = 0
+
+        // Creates a timer which triggers the end of the game when it finishes
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
 
             override fun onTick(millisUntilFinished: Long) {
-                // TODO implement what should happen each tick of the timer
+                _currentTime.value = (millisUntilFinished / ONE_SECOND)
             }
 
             override fun onFinish() {
-                // TODO implement what should happen when the timer finishes
+                _currentTime.value = DONE
+                _eventGameFinish.value = true
             }
         }
 
@@ -100,10 +109,9 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-           resetList()
+            resetList()
         }
-            _word.value = wordList.removeAt(0)
-
+        _word.value = wordList.removeAt(0)
     }
 
     /** Methods for buttons presses **/
